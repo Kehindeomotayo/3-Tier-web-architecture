@@ -1,6 +1,6 @@
 pipeline {
     agent any
-}
+
     stages {
         stage('clone Repositry') {
             steps {
@@ -8,3 +8,4 @@ pipeline {
             }
         }
     }
+}

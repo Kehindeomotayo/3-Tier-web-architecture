@@ -1,10 +1,11 @@
 pipeline {
     agent any
-
     stages {
-        stage('clone Repositry') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'git@github.com:Kehindeomotayo/3-Tier-web-architecture.git'
+                sshagent(['credential-id']) {
+                    git url: 'git@github.com:Kehindeomotayo/3-Tier-web-architecture.git', branch: 'main'
+                }
             }
         }
     }

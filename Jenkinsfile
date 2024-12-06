@@ -3,14 +3,7 @@ pipeline {
 
     environment {
         FRONTEND_IMAGE = "your-frontend-image:latest"
-        DOCKER_IMAGE = "your-image:latest"
-        AWS_ACCESS_KEY_ID = credentials('aws-key') // Jenkins credential ID for access key
-        AWS_SECRET_ACCESS_KEY = credentials('aws-key') // Jenkins credential ID for secret key
-        ECR_REPO = "429841094792.dkr.ecr.us-east-1.amazonaws.com/frontend"
-        ECS_TASK_DEFINITION = "task-web-app"
-        ECS_CLUSTER =  "Full-stack-web-app"
-        ECS_SERVICE = "web-app-service"
-        AWS_REGION = "us-east-1"
+        DOCKER_IMAGE = "your-image:latest" 
         SONAR_PROJECT_KEY = "3-tier-architecture-project_scan"
         SONAR_ORG = "3-Tier-Architecture-project"
         SONAR_TOKEN = credentials('sonar-login') // Add token in Jenkins credentials

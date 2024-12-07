@@ -38,8 +38,8 @@ pipeline {
                 withSonarQubeEnv('SonarCloud') {
                     sh '''
                     sonar-scanner \
-                    -Dsonar.projectKey=3-tier-architecture-project_scan \
-                    -Dsonar.organization=3-Tier-Architecture-project \
+                    -Dsonar.projectKey=scan \
+                    -Dsonar.organization=3-tier-architecture-project \
                     -Dsonar.login=$SONAR_TOKEN \
                     -Dsonar.host.url=https://sonarcloud.io \
                     -Dsonar.sourceEncoding=UTF-8 \

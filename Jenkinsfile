@@ -9,6 +9,10 @@ pipeline {
         SONAR_TOKEN = credentials('sonar-login') // Add token in Jenkins credentials
         SONAR_SCANNER_PATH = '/opt/sonar-scanner/bin'
         PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin:${SONAR_SCANNER_PATH}"
+        ECR_REPO = "971422716815.dkr.ecr.eu-west-1.amazonaws.com/frontend"
+        AWS_REGION = "eu-west-1"
+        AWS_ACCESS_KEY_ID = credentials('access-key') // Jenkins credential ID for access key
+        AWS_SECRET_ACCESS_KEY = credentials('access-key') // Jenkins credential ID for secret key
     }
 
     stages {
@@ -57,6 +61,19 @@ pipeline {
                 }
             }
         }
+        stage('Push Docker Image to ECR') {
+            steps {
+                script {
+                    // Authenticate Docker to ECR
+                    sh """
+                    aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
+                    docker tag $FRONTEND_IMAGE $ECR_REPO:$BUILD_NUMBER
+                    docker push $ECR_REPO:$BUILD_NUMBER
+                    """
+                }
+            }
+        }
+
     }
 }
       

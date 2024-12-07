@@ -4,7 +4,7 @@ pipeline {
     environment {
         FRONTEND_IMAGE = "your-frontend-image:latest"
         DOCKER_IMAGE = "your-image:latest" 
-        SONAR_PROJECT_KEY = "scan"
+        SONAR_PROJECT_KEY = "3-tier-architecture-project_scan"
         SONAR_ORG = "3-tier-architecture-project"
         SONAR_TOKEN = credentials('sonar-login') // Add token in Jenkins credentials
         SONAR_SCANNER_PATH = '/opt/sonar-scanner/bin'
@@ -38,7 +38,7 @@ pipeline {
                 withSonarQubeEnv('SonarCloud') {
                     sh '''
                     sonar-scanner \
-                    -Dsonar.projectKey=scan \
+                    -Dsonar.projectKey=3-tier-architecture-project_scan \
                     -Dsonar.organization=3-tier-architecture-project \
                     -Dsonar.login=$SONAR_TOKEN \
                     -Dsonar.host.url=https://sonarcloud.io \

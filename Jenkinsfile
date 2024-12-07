@@ -5,7 +5,7 @@ pipeline {
         FRONTEND_IMAGE = "your-frontend-image:latest"
         DOCKER_IMAGE = "your-image:latest" 
         SONAR_PROJECT_KEY = "scan"
-        SONAR_ORG = "3-Tier-Architecture-project"
+        SONAR_ORG = "3-tier-architecture-project"
         SONAR_TOKEN = credentials('sonar-login') // Add token in Jenkins credentials
         SONAR_SCANNER_PATH = '/opt/sonar-scanner/bin'
         PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin:${SONAR_SCANNER_PATH}"

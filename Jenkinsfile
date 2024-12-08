@@ -14,7 +14,7 @@ pipeline {
         AWS_ACCESS_KEY_ID = credentials('access-key') // Jenkins credential ID for access key
         AWS_SECRET_ACCESS_KEY = credentials('access-key') // Jenkins credential ID for secret key
         ECS_TASK_DEFINITION = "ecs-task"
-        ECS_CLUSTER = "Web-app"
+        ECS_CLUSTER = "web-app"
         ECS_SERVICE = "wep-app-service"
     }
 

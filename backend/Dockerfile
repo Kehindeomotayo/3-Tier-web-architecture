@@ -14,8 +14,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
-# Expose port 5000 for Flask
-EXPOSE 5000
+# Expose port 5001 for Flask
+EXPOSE 5001
 
 # Run the migration and start the app
 CMD ["bash", "-c", "flask db upgrade && flask run --host=0.0.0.0"]

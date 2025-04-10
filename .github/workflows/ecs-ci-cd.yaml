@@ -14,9 +14,9 @@ on:
       - stage
 
 env:
-  SONAR_PROJECT_KEY: ecs-ci-cd-1
-  SONAR_ORG: 3-tier-wep-app
-  AWS_REGION: eu-west-1
+  SONAR_PROJECT_KEY: web-app-1_web-app-1
+  SONAR_ORG: web-app-1
+  AWS_REGION: eu-west-2
   ECS_TASK_DEFINITION: webapp-task
   ECS_CLUSTER: web-app
   ECS_SERVICE: web-app-service
@@ -130,7 +130,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
+          aws-region: eu-west-2
   
       - name: Login to Amazon ECR
         id: login-ecr

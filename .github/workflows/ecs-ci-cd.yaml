@@ -15,10 +15,10 @@ on:
 
 env:
   SONAR_PROJECT_KEY: 3-Tier-web-architecture
-  SONAR_ORG: ecs-ci-cd
+  SONAR_ORG: 3-tier-wep-app
   AWS_REGION: eu-west-1
-  ECS_TASK_DEFINITION: task-web-app
-  ECS_CLUSTER: Full-stack-web-app
+  ECS_TASK_DEFINITION: webapp-task
+  ECS_CLUSTER: web-app
   ECS_SERVICE: web-app-service
 
 jobs:

@@ -14,7 +14,7 @@ on:
       - stage
 
 env:
-  SONAR_PROJECT_KEY: 3-tier-wep-app
+  SONAR_PROJECT_KEY: wep-app1
   SONAR_ORG: 3-tier-wep-app
   AWS_REGION: eu-west-1
   ECS_TASK_DEFINITION: webapp-task

@@ -165,7 +165,7 @@ jobs:
             --network-mode awsvpc \
             --cpu 1024 \
             --memory 3072 \
-            --execution-role-arn arn:aws:iam::429841094792:role/todo-app-role)
+            --execution-role-arn arn:aws:iam::971422716815:role/ecsTaskExecutionRole)
 
           NEW_REVISION=$(echo "$NEW_TASK_DEF" | jq -r '.taskDefinition.revision')
 

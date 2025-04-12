@@ -19,7 +19,7 @@ env:
   AWS_REGION: eu-west-2
   ECS_TASK_DEFINITION: webapp-task
   ECS_CLUSTER: web-app
-  ECS_SERVICE: web-app-service
+  ECS_SERVICE: web-service
 
 jobs:
   sonarcloud:

@@ -27,7 +27,7 @@ pipeline {
 
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'git@github.com:Kehindeomotayo/3-Tier-web-architecture.git'
+                git branch: 'main', url: 'https://github.com/Kehindeomotayo/3-Tier-web-architecture.git'
             }
         }
 

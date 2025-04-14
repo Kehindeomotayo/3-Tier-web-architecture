@@ -10,7 +10,7 @@ pipeline {
         ECS_TASK_DEFINITION = "webapp-task"
         ECS_CLUSTER = "web-app"
         ECS_SERVICE = "web-service"
-        AWS_REGION = "eu-west-1"
+        AWS_REGION = "eu-west-2"
         SONAR_PROJECT_KEY = "wep-app1"
         SONAR_ORG = "3-tier-wep-app"
         SONAR_TOKEN = credentials('sonarcloud-token')

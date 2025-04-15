@@ -12,6 +12,7 @@ pipeline {
         SONAR_PROJECT_KEY = "wep-app1"
         SONAR_ORG = "3-tier-wep-app"
         SONAR_SCANNER_PATH = '/opt/sonar-scanner/bin'
+        CONTAINER_NAME = "frontend"
         PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin:${SONAR_SCANNER_PATH}"
     }
 
@@ -76,7 +77,9 @@ pipeline {
                     sh '''
                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
                     docker tag ${FRONTEND_IMAGE} ${ECR_REPO}:${BUILD_NUMBER}
+                    docker tag ${FRONTEND_IMAGE} ${ECR_REPO}:latest
                     docker push ${ECR_REPO}:${BUILD_NUMBER}
+                    docker push ${ECR_REPO}:latest
                     '''
                 }
             }
@@ -91,26 +94,28 @@ pipeline {
                      passwordVariable: 'AWS_SECRET_ACCESS_KEY']
                 ]) {
                     script {
-                        def ecsTaskDefinition = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_TASK_DEFINITION}", returnStdout: true).trim()
-                        def executionRoleArn = "arn:aws:iam::971422716815:role/ecsTaskExecutionRole"
+                        def ecsTaskDefinitionJson = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_TASK_DEFINITION} --output json", returnStdout: true).trim()
 
+                        // Update image inside container definitions
                         def updatedContainerDefs = sh(script: """
-                            echo '${ecsTaskDefinition}' | jq -r ".taskDefinition.containerDefinitions | map(if .name == \\"frontend\\" then .image = \\"${ECR_REPO}:${BUILD_NUMBER}\\" else . end)" | jq -s '.[0]'
-                        """, returnStdout: true).trim()
+                            echo '${ecsTaskDefinitionJson}' | jq '.taskDefinition.containerDefinitions | map(if .name == "${CONTAINER_NAME}" then .image = "${ECR_REPO}:${BUILD_NUMBER}" else . end)' > container-defs.json
+                        """, returnStdout: true)
 
                         def newTaskDef = sh(script: """
                             aws ecs register-task-definition \
                                 --family ${ECS_TASK_DEFINITION} \
-                                --container-definitions '${updatedContainerDefs}' \
+                                --container-definitions file://container-defs.json \
                                 --requires-compatibilities FARGATE \
                                 --network-mode awsvpc \
                                 --cpu 1024 \
                                 --memory 3072 \
-                                --execution-role-arn ${executionRoleArn}
+                                --execution-role-arn arn:aws:iam::971422716815:role/ecsTaskExecutionRole \
+                                --output json
                         """, returnStdout: true).trim()
 
                         def newRevision = sh(script: "echo '${newTaskDef}' | jq -r '.taskDefinition.revision'", returnStdout: true).trim()
 
+                        // Update ECS service with the new task definition revision
                         sh """
                         aws ecs update-service \
                             --cluster ${ECS_CLUSTER} \
@@ -127,6 +132,12 @@ pipeline {
     post {
         always {
             cleanWs()
+        }
+        success {
+            echo "✅ Deployment successful! Image: ${ECR_REPO}:${BUILD_NUMBER}"
+        }
+        failure {
+            echo "❌ Deployment failed at stage: ${env.STAGE_NAME}"
         }
     }
 }

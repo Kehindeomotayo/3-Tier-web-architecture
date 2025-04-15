@@ -10,7 +10,7 @@ pipeline {
         ECS_SERVICE = "web-service"
         AWS_REGION = "eu-west-2"
         SONAR_PROJECT_KEY = "web-app1"
-        SONAR_ORG = "3-tier-wep-app"
+        SONAR_ORG = "web-app-1"
         SONAR_SCANNER_PATH = '/opt/sonar-scanner/bin'
         CONTAINER_NAME = "frontend"
         PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin:${SONAR_SCANNER_PATH}"

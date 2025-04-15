@@ -9,7 +9,7 @@ pipeline {
         ECS_CLUSTER = "web-app"
         ECS_SERVICE = "web-service"
         AWS_REGION = "eu-west-2"
-        SONAR_PROJECT_KEY = "web-app1"
+        SONAR_PROJECT_KEY = "web-app-1"
         SONAR_ORG = "web-app-1"
         SONAR_SCANNER_PATH = '/opt/sonar-scanner/bin'
         CONTAINER_NAME = "frontend"

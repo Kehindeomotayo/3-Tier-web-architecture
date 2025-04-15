@@ -9,8 +9,8 @@ pipeline {
         ECS_CLUSTER = "web-app"
         ECS_SERVICE = "web-service"
         AWS_REGION = "eu-west-2"
-        SONAR_PROJECT_KEY = "web-app-1"
-        SONAR_ORG = "web-app-1"
+        SONAR_PROJECT_KEY = "jenkin-job_jenkins-job"
+        SONAR_ORG = "jenkin-job"
         SONAR_SCANNER_PATH = '/opt/sonar-scanner/bin'
         CONTAINER_NAME = "frontend"
         PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/snap/bin:${SONAR_SCANNER_PATH}"

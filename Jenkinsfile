@@ -16,7 +16,6 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Kehindeomotayo/3-Tier-web-architecture.git'
@@ -31,13 +30,13 @@ pipeline {
                 withSonarQubeEnv('SonarCloud') {
                     sh '''
                     sonar-scanner \
-                    -Dsonar.projectKey=$SONAR_PROJECT_KEY \
-                    -Dsonar.organization=$SONAR_ORG \
-                    -Dsonar.login=$SONAR_TOKEN \
-                    -Dsonar.host.url=https://sonarcloud.io \
-                    -Dsonar.sourceEncoding=UTF-8 \
-                    -Dsonar.sources=frontend \
-                    -Dsonar.exclusions=**/test/**,**/*.spec.js
+                      -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                      -Dsonar.organization=${SONAR_ORG} \
+                      -Dsonar.login=${SONAR_TOKEN} \
+                      -Dsonar.host.url=https://sonarcloud.io \
+                      -Dsonar.sourceEncoding=UTF-8 \
+                      -Dsonar.sources=frontend \
+                      -Dsonar.exclusions=**/test/**,**/*.spec.js
                     '''
                 }
             }
@@ -56,13 +55,13 @@ pipeline {
 
         stage('Build Frontend Docker Image') {
             steps {
-                sh 'docker build -t $FRONTEND_IMAGE -f frontend/Dockerfile frontend/'
+                sh 'docker build -t ${FRONTEND_IMAGE} -f frontend/Dockerfile frontend/'
             }
         }
 
         stage('Run Trivy Scan') {
             steps {
-                sh 'trivy image --severity HIGH,CRITICAL $FRONTEND_IMAGE || exit 1'
+                sh 'trivy image --severity HIGH,CRITICAL ${FRONTEND_IMAGE} || exit 1'
             }
         }
 
@@ -75,9 +74,9 @@ pipeline {
                      passwordVariable: 'AWS_SECRET_ACCESS_KEY']
                 ]) {
                     sh '''
-                    aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
-                    docker tag $FRONTEND_IMAGE $ECR_REPO:$BUILD_NUMBER
-                    docker push $ECR_REPO:$BUILD_NUMBER
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
+                    docker tag ${FRONTEND_IMAGE} ${ECR_REPO}:${BUILD_NUMBER}
+                    docker push ${ECR_REPO}:${BUILD_NUMBER}
                     '''
                 }
             }
@@ -92,8 +91,7 @@ pipeline {
                      passwordVariable: 'AWS_SECRET_ACCESS_KEY']
                 ]) {
                     script {
-                        def ecsTaskDefinition = sh(script: "aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION", returnStdout: true).trim()
-
+                        def ecsTaskDefinition = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_TASK_DEFINITION}", returnStdout: true).trim()
                         def executionRoleArn = "arn:aws:iam::971422716815:role/ecsTaskExecutionRole"
 
                         def updatedContainerDefs = sh(script: """
@@ -102,22 +100,23 @@ pipeline {
 
                         def newTaskDef = sh(script: """
                             aws ecs register-task-definition \
-                                --family $ECS_TASK_DEFINITION \
+                                --family ${ECS_TASK_DEFINITION} \
                                 --container-definitions '${updatedContainerDefs}' \
                                 --requires-compatibilities FARGATE \
                                 --network-mode awsvpc \
                                 --cpu 1024 \
                                 --memory 3072 \
-                                --execution-role-arn $executionRoleArn
+                                --execution-role-arn ${executionRoleArn}
                         """, returnStdout: true).trim()
 
                         def newRevision = sh(script: "echo '${newTaskDef}' | jq -r '.taskDefinition.revision'", returnStdout: true).trim()
 
                         sh """
                         aws ecs update-service \
-                            --cluster $ECS_CLUSTER \
-                            --service $ECS_SERVICE \
-                            --task-definition $ECS_TASK_DEFINITION:$newRevision
+                            --cluster ${ECS_CLUSTER} \
+                            --service ${ECS_SERVICE} \
+                            --task-definition ${ECS_TASK_DEFINITION}:${newRevision} \
+                            --desired-count 1
                         """
                     }
                 }
@@ -125,5 +124,9 @@ pipeline {
         }
     }
 
-
+    post {
+        always {
+            cleanWs()
+        }
+    }
 }

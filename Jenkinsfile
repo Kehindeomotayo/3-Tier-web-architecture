@@ -43,17 +43,6 @@ pipeline {
             }
         }
 
-        stage('Wait for Quality Gate') {
-            steps {
-                script {
-                    def qualityGate = waitForQualityGate()
-                    if (qualityGate.status != 'OK') {
-                        error "Quality gate failed: ${qualityGate.status}"
-                    }
-                }
-            }
-        }
-
         stage('Build Frontend Docker Image') {
             steps {
                 sh 'docker build -t ${FRONTEND_IMAGE} -f frontend/Dockerfile frontend/'

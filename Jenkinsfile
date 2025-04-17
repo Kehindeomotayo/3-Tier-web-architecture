@@ -85,7 +85,7 @@ pipeline {
                     script {
                         def ecsTaskDefinitionJson = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_TASK_DEFINITION} --output json", returnStdout: true).trim()
 
-                        /// Update image inside container definitions
+                        // Update image inside container definitions
                         def updatedContainerDefs = sh(script: """
                             echo '${ecsTaskDefinitionJson}' | jq '.taskDefinition.containerDefinitions | map(if .name == "${CONTAINER_NAME}" then .image = "${ECR_REPO}:${BUILD_NUMBER}" else . end)' > container-defs.json
                         """, returnStdout: true)

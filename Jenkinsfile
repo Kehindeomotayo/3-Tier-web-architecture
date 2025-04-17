@@ -69,6 +69,19 @@ pipeline {
             }
         }
 
+        stage('Install jq') {
+            steps {
+                sh '''
+                if ! command -v jq &> /dev/null; then
+                    echo "Installing jq..."
+                    apt-get update && apt-get install -y jq
+                else
+                    echo "jq is already installed."
+                fi
+                '''
+            }
+        }
+
         stage('Update ECS Service') {
             steps {
                 withCredentials([aws(credentialsId: 'aws-credentials')]) {
@@ -76,9 +89,9 @@ pipeline {
                         def ecsTaskDefinitionJson = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_TASK_DEFINITION} --output json", returnStdout: true).trim()
 
                         // Update image inside container definitions
-                        def updatedContainerDefs = sh(script: """
-                            echo '${ecsTaskDefinitionJson}' | jq '.taskDefinition.containerDefinitions | map(if .name == "${CONTAINER_NAME}" then .image = "${ECR_REPO}:${BUILD_NUMBER}" else . end)' > container-defs.json
-                        """, returnStdout: true)
+                        sh """
+                        echo '${ecsTaskDefinitionJson}' | jq '.taskDefinition.containerDefinitions | map(if .name == "${CONTAINER_NAME}" then .image = "${ECR_REPO}:${BUILD_NUMBER}" else . end)' > container-defs.json
+                        """
 
                         def newTaskDef = sh(script: """
                             aws ecs register-task-definition \

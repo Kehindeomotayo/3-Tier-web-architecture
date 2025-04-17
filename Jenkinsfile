@@ -57,12 +57,7 @@ pipeline {
 
         stage('Push Docker Image to ECR') {
             steps {
-                withCredentials([
-                    [$class: 'UsernamePasswordMultiBinding',
-                     credentialsId: 'aws-credentials',
-                     usernameVariable: 'AWS_ACCESS_KEY_ID',
-                     passwordVariable: 'AWS_SECRET_ACCESS_KEY']
-                ]) {
+                withCredentials([aws(credentialsId: 'aws-credentials')]) {
                     sh '''
                     aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
                     docker tag ${FRONTEND_IMAGE} ${ECR_REPO}:${BUILD_NUMBER}
@@ -76,16 +71,11 @@ pipeline {
 
         stage('Update ECS Service') {
             steps {
-                withCredentials([
-                    [$class: 'UsernamePasswordMultiBinding',
-                     credentialsId: 'aws-credentials',
-                     usernameVariable: 'AWS_ACCESS_KEY_ID',
-                     passwordVariable: 'AWS_SECRET_ACCESS_KEY']
-                ]) {
+                withCredentials([aws(credentialsId: 'aws-credentials')]) {
                     script {
                         def ecsTaskDefinitionJson = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_TASK_DEFINITION} --output json", returnStdout: true).trim()
 
-                        /// Update image inside container definitions
+                        // Update image inside container definitions
                         def updatedContainerDefs = sh(script: """
                             echo '${ecsTaskDefinitionJson}' | jq '.taskDefinition.containerDefinitions | map(if .name == "${CONTAINER_NAME}" then .image = "${ECR_REPO}:${BUILD_NUMBER}" else . end)' > container-defs.json
                         """, returnStdout: true)

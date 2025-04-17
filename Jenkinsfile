@@ -74,7 +74,7 @@ pipeline {
                 sh '''
                 if ! command -v jq &> /dev/null; then
                     echo "Installing jq..."
-                    apt-get update && apt-get install -y jq
+                   sudo apt-get update && sudo apt-get install -y jq
                 else
                     echo "jq is already installed."
                 fi

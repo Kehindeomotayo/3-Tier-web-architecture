@@ -73,8 +73,9 @@ pipeline {
             steps {
                 sh '''
                 if ! command -v jq &> /dev/null; then
-                    echo "Installing jq..."
-                   sudo apt-get update && sudo apt-get install -y jq
+                    echo "Installing jq locally in workspace..."
+                    curl -Lo jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+                    chmod +x jq
                 else
                     echo "jq is already installed."
                 fi
@@ -88,9 +89,9 @@ pipeline {
                     script {
                         def ecsTaskDefinitionJson = sh(script: "aws ecs describe-task-definition --task-definition ${ECS_TASK_DEFINITION} --output json", returnStdout: true).trim()
 
-                        // Update image inside container definitions
+                        // Use local ./jq binary for parsing
                         sh """
-                        echo '${ecsTaskDefinitionJson}' | jq '.taskDefinition.containerDefinitions | map(if .name == "${CONTAINER_NAME}" then .image = "${ECR_REPO}:${BUILD_NUMBER}" else . end)' > container-defs.json
+                        echo '${ecsTaskDefinitionJson}' | ./jq '.taskDefinition.containerDefinitions | map(if .name == "${CONTAINER_NAME}" then .image = "${ECR_REPO}:${BUILD_NUMBER}" else . end)' > container-defs.json
                         """
 
                         def newTaskDef = sh(script: """
@@ -105,9 +106,8 @@ pipeline {
                                 --output json
                         """, returnStdout: true).trim()
 
-                        def newRevision = sh(script: "echo '${newTaskDef}' | jq -r '.taskDefinition.revision'", returnStdout: true).trim()
+                        def newRevision = sh(script: "echo '${newTaskDef}' | ./jq -r '.taskDefinition.revision'", returnStdout: true).trim()
 
-                        // Update ECS service with the new task definition revision
                         sh """
                         aws ecs update-service \
                             --cluster ${ECS_CLUSTER} \
@@ -129,7 +129,7 @@ pipeline {
             echo "✅ Deployment successful! Image: ${ECR_REPO}:${BUILD_NUMBER}"
         }
         failure {
-            echo "❌ Deployment failed at stage: ${env.STAGE_NAME}"
+            echo "❌ Deployment failed at some stage."
         }
     }
 }

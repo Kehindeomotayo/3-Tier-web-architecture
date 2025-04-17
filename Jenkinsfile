@@ -104,7 +104,7 @@ pipeline {
 
                         def newRevision = sh(script: "echo '${newTaskDef}' | jq -r '.taskDefinition.revision'", returnStdout: true).trim()
 
-                        // Update ECS service with the new task definition revision
+                        /// Update ECS service with the new task definition revision
                         sh """
                         aws ecs update-service \
                             --cluster ${ECS_CLUSTER} \

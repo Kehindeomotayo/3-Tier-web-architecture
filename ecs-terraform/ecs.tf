@@ -189,7 +189,7 @@ resource "aws_ecs_service" "service" {
 
 resource "aws_route53_record" "alb" {
   zone_id = data.aws_route53_zone.selected.zone_id
-  name    = "dev.holadmexbobpro.online" # Replace with your desired subdomain
+  name    = "dev.ogbodebob.online" # Replace with your desired subdomain
   type    = "A"
 
   alias {

@@ -135,12 +135,31 @@ resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = aws_lb.alb.arn
   port              = 80
   protocol          = "HTTP"
+  
+  default_action {
+    type = "redirect"
+    
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
 
+resource "aws_lb_listener" "https_listener" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = data.aws_acm_certificate.existing.arn
+  
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.tg.arn
   }
 }
+
 
 # ECS Service with Load Balancer Configuration
 resource "aws_ecs_service" "service" {
@@ -168,3 +187,14 @@ resource "aws_ecs_service" "service" {
   ]
 }
 
+resource "aws_route53_record" "alb" {
+  zone_id = data.aws_route53_zone.selected.zone_id
+  name    = "dev.holadmexbobpro.online" # Replace with your desired subdomain
+  type    = "A"
+
+  alias {
+    name                   = aws_lb.alb.dns_name
+    zone_id                = aws_lb.alb.zone_id
+    evaluate_target_health = true
+  }
+}

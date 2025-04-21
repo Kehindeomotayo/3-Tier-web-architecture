@@ -1,3 +1,14 @@
+data "aws_acm_certificate" "existing" {
+  domain      = "*.ogbodebob.online"
+  statuses    = ["ISSUED"]
+  most_recent = true
+}
+
+data "aws_route53_zone" "selected" {
+  name         = "dev.ogbodebob.online"
+  private_zone = false
+}
+
 # Create ECS Cluster
 resource "aws_ecs_cluster" "cluster" {
   name = "web-app"

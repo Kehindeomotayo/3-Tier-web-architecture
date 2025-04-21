@@ -14,8 +14,8 @@ on:
       - stage
 
 env:
-  SONAR_PROJECT_KEY: web-app-1_web-app-1
-  SONAR_ORG: web-app-1
+  SONAR_PROJECT_KEY: jenkin-job_jenkins-job
+  SONAR_ORG: jenkin-job
   AWS_REGION: eu-west-2
   ECS_TASK_DEFINITION: webapp-task
   ECS_CLUSTER: web-app

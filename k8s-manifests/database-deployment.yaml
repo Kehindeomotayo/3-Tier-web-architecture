@@ -21,10 +21,10 @@ spec:
         resources:
           requests:
             memory: "512Mi"
-            cpu: "500m" 
-          #limits:
-            #memory: "2Mi"
-            #cpu: "1"
+            cpu: "500m"
+          # limits:
+          #   memory: "1Gi"
+          #   cpu: "1"
         env:
         - name: POSTGRES_USER
           value: "ecommerce"
@@ -32,6 +32,8 @@ spec:
           value: "testing123"
         - name: POSTGRES_DB
           value: "ecommerce_db"
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
         volumeMounts:
         - mountPath: /var/lib/postgresql/data
           name: db-storage
@@ -39,8 +41,7 @@ spec:
       - name: db-storage
         persistentVolumeClaim:
           claimName: db-pvc
-        #- name: db-storage
-          #emptyDir: {}
+
 
         
 

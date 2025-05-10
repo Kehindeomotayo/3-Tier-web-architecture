@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+
 env:
   SONAR_PROJECT_KEY: jenkin-job_jenkins-job
   SONAR_ORG: jenkin-job   
@@ -12,17 +13,19 @@ jobs:
   sonarcloud:
     name: Code Analysis with SonarCloud
     runs-on: self-hosted
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonarcloud.io
+      - name: Install unzip
+        run: sudo apt-get update && sudo apt-get install -y unzip
 
-  
+      - name: Run SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_HOST_URL: https://sonarcloud.io
